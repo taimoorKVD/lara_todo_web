@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 
 use App\Models\Todo;
 
@@ -27,7 +26,7 @@ class TodoController extends Controller
      */
     public function create()
     {
-        //
+        return view('todo.create-update');
     }
 
     /**
@@ -44,24 +43,13 @@ class TodoController extends Controller
         try {
             $todo->save();
             return redirect()
-                ->back()
+                ->route('todos.index')
                 ->with('success-message', 'Todo created successfully.');
         } catch ( \Exception $e) {
             return redirect()
             ->back()
             ->with('error-message', $e->getMessage());
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        // dd($id);
     }
 
     /**
@@ -72,7 +60,8 @@ class TodoController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('todo.create-update')
+            ->withTodo(Todo::find(decrypt($id)));
     }
 
     /**
@@ -82,9 +71,21 @@ class TodoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        //
+        $todo = Todo::find(decrypt($id));
+        try {
+            $todo->todo = request()->todo;
+            $todo->save();
+            return redirect()
+                ->route('todos.index')
+                ->with('success-message', 'Todo updated successfully.');
+        } catch ( \Exception $e) {
+            return redirect()
+            ->back()
+            ->with('error-message', $e->getMessage());
+        }
+
     }
 
     /**
@@ -95,7 +96,7 @@ class TodoController extends Controller
      */
     public function destroy ($id)
     {
-        $todo = Todo::find($id);
+        $todo = Todo::find(decrypt($id));
         try {
             $todo->delete();
             return redirect()

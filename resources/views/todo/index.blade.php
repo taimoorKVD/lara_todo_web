@@ -10,10 +10,9 @@
             Todos
         </div>
         <div class="float-right">
-        <form action="{{ route('todos.store') }}" method="post">
-            @csrf
-            <input type="text" class="form-control" name="todo" placeholder="Create new todo..." style="width: 500px;">
-        </form>
+            <a href="{{ route('todos.create') }}" class="btn btn-sm">
+                <span class="fa fa-plus"></span>
+            </a>
         </div>
     </div>
     <div class="card-body">
@@ -21,10 +20,10 @@
             @foreach($todos as $todo)
             <li class="list-group-item float-left">
                 {{ $todo->todo }}
-                <a href="{{ route('todos.destroy', $todo->id) }}" class="btn btn-sm float-right ml-2 delete" data-confirm="Are you sure to delete this item?">
+                <button class="btn btn-sm mr-2 float-right delete" data-id="{{ encrypt($todo->id) }}">
                     <span class="fa fa-trash"></span>
-                </a>
-                <a href="{{ route('todos.edit', [ 'todo' => $todo->id ]) }}" class="btn btn-sm float-right">
+                </button>
+                <a href="{{ route('todos.edit', [ 'todo' => encrypt($todo->id) ]) }}" class="btn btn-sm float-right">
                     <span class="fa fa-edit"></span>
                 </a>
             </li>
@@ -35,17 +34,43 @@
         {{ $todos->links() }}
     </div>
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form action="" method="POST" id="deleteTagForm">
+            @csrf
+            @method('DELETE')
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Tag</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go Back</button>
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('js')
-<script>
-    $(document).ready(function () {
-        $('.delete').on("click", function (e) {
-            e.preventDefault();
-            if (confirm($(this).attr('data-confirm'))) {
-                window.location.href = $(this).attr('href');
-            }
+    <script>
+        $(document).ready(function () {
+           $('.delete').on('click', function(){
+                var form = document.getElementById('deleteTagForm');
+                var id = $(this).attr('data-id');
+                form.action = '{!! url('todos') !!}'+'/'+id;
+                $('#deleteModal').modal('show');
+           });
         });
-    });
-</script>
+    </script>
 @endsection
