@@ -19,6 +19,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-
 Route::resource('todos', 'TodoController');
+Route::post('/todos/todo/{id}', 'TodoController@markAsCompleted')
+    ->name('todo.completed');

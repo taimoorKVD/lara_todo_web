@@ -16,7 +16,11 @@
         <div class="card-body">
             <form action="{{ isset($todo) && $todo->todo ? route('todos.update', encrypt($todo->id)) : route('todos.store') }}" method="post">
                 @csrf
-                @method('put')
+                
+                @if(isset($todo))
+                    @method('put')
+                @endif
+                
                 <input type="text" class="form-control" name="todo" placeholder="Create new todo..." 
                 value="{{ isset($todo) && $todo->todo ? $todo->todo : '' }}">
             </form>

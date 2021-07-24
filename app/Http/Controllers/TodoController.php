@@ -53,6 +53,28 @@ class TodoController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function markAsCompleted($id)
+    {
+        $todo = Todo::find(decrypt($id));
+        try {
+            $todo->status = 1;
+            $todo->save();
+            return redirect()
+                ->route('todos.index')
+                ->with('success-message', 'Todo marked as completed successfully.');
+        } catch ( \Exception $e) {
+            return redirect()
+            ->back()
+            ->with('error-message', $e->getMessage());
+        }
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
